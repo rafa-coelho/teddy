@@ -1,0 +1,46 @@
+version: '3.8'
+services:
+  backend:
+    build: ./src/backend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./src/backend:/app
+      - /app/node_modules
+    environment:
+      NODE_ENV: development
+      DB_TYPE: postgres
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: teddy
+
+    depends_on:
+      - db
+
+  frontend:
+    build: ./src/frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./src/frontend:/app
+      - /app/node_modules
+    environment:
+      NODE_ENV: development
+    depends_on:
+      - backend
+
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: teddy
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

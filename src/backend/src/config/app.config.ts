@@ -1,6 +1,5 @@
 const {
   NODE_ENV,
-  PORT,
   DB_TYPE,
   DB_HOST,
   DB_PORT,
@@ -11,7 +10,6 @@ const {
 
 const appConfig = {
   nodeEnv: NODE_ENV,
-  port: parseInt(PORT, 10),
   db: {
     type: DB_TYPE as 'postgres' | 'sqlite' | 'mysql' | 'mariadb' | 'mssql',
     host: DB_HOST,
