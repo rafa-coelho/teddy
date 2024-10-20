@@ -1,0 +1,27 @@
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 300px;
+    text-align: center;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    border: 1px dashed #ddd;
+    color: #555;
+    gap: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.empty-state:hover {
+    background-color: #f1f1f1;
+}
+
+.empty-icon {
+    color: #ff7a00;
+}
+
+.empty-message {
+    font-size: 1.2rem;
+    font-weight: 500;
+}

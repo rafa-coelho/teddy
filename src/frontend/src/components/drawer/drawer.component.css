@@ -1,0 +1,35 @@
+.drawer {
+    height: 100vh;
+    background-color: #212121;
+    color: white;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 5;
+    transition: width 0.3s;
+}
+
+.drawer.open {
+    width: 240px;
+}
+
+.drawer.closed {
+    width: 0;
+    overflow: hidden;
+}
+
+.toggle-button {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    background-color: transparent;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.drawer-logo {
+    height: 50px;
+    margin: 2rem 0;
+}

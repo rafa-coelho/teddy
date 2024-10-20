@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './home.page.css';
-import { useToast } from '../../components/toast/toast.context';
+import { useToast } from '../../components/toast/toast.hook';
 
 const HomePage: React.FC = () => {
     const [name, setName] = useState<string>('');
