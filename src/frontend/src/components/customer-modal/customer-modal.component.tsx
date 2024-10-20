@@ -25,8 +25,8 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
     useEffect(() => {
         if (initialData) {
             setName(initialData.name);
-            setSalary(initialData.salary.toString());
-            setCompanyValue(initialData.companyValue.toString());
+            setSalary(formatCurrency(initialData.salary.toString()));
+            setCompanyValue(formatCurrency(initialData.companyValue.toString()));
         }
     }, [initialData]);
 

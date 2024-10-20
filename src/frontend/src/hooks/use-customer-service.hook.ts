@@ -102,8 +102,28 @@ const useCustomerService = () => {
         }
     };
 
+    const deleteCustomerAsync = async (id: string): Promise<void | ErrorResponse> => {
+        if (state.isMocked) {
+            console.log('Deleting customer:', id);
 
-    return { getAllCustomersAsync, createCustomerAsync, updateCustomerAsync };
+            const index = mockData.findIndex((c) => c.id === id);
+            if (index >= 0) {
+                mockData.splice(index, 1);
+            } else {
+                console.warn(`Cliente com ID ${id} não encontrado.`);
+            }
+            return;
+        }
+
+        try {
+            await axios.delete(`${apiUrl}/${id}`);
+        } catch (error) {
+            return handleApiError(error);
+        }
+    }
+
+
+    return { getAllCustomersAsync, createCustomerAsync, updateCustomerAsync, deleteCustomerAsync };
 };
 
 export default useCustomerService;

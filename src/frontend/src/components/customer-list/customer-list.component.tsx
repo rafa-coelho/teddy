@@ -9,6 +9,7 @@ interface CustomerListProps {
     data: ResponseListData<CustomerModel>;
     customersPerPage: number;
     setCustomersPerPage: (itemsPerPage: number) => void;
+    refreshData: () => void;
 }
 
 const CustomerList: React.FC<CustomerListProps> = (props) => {
@@ -42,9 +43,8 @@ const CustomerList: React.FC<CustomerListProps> = (props) => {
                     {props.data.list.map((customer, index) => (
                         <CustomerCard
                             key={index}
-                            name={customer.name}
-                            salary={customer.salary}
-                            companyValue={customer.companyValue}
+                            customerData={customer}
+                            onSuccess={props.refreshData}
                         />
                     ))}
                 </div>

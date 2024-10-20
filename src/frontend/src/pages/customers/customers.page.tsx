@@ -15,7 +15,7 @@ const CustomersPage: React.FC = () => {
     const [customersPerPage, setCustomersPerPage] = useState(16);
     const [isLoading, setIsLoading] = useState(false);
 
-    const { isOpen, openModal, closeModal, customerData } = useCustomerModal();
+    const { isOpen, openModal, closeModal } = useCustomerModal();
     const { getAllCustomersAsync, createCustomerAsync, updateCustomerAsync } = useCustomerService();
     const { showToast } = useToast();
 
@@ -60,6 +60,7 @@ const CustomersPage: React.FC = () => {
                 data={customersResponse}
                 customersPerPage={customersPerPage}
                 setCustomersPerPage={setCustomersPerPage}
+                refreshData={() => fetchCustomers(currentPage, customersPerPage)}
             />
 
             <button
@@ -80,7 +81,6 @@ const CustomersPage: React.FC = () => {
                 isOpen={isOpen}
                 onClose={closeModal}
                 onSave={handleSave}
-                initialData={customerData}
                 loading={isLoading}
             />
 
