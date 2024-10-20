@@ -39,7 +39,7 @@ nav ul li {
 
 nav ul li.selected,
 nav ul li:hover {
-    color: orange;
+    color: #EC6724;
     text-decoration: underline;
 }
 

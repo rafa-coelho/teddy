@@ -28,7 +28,7 @@
 }
 
 .page-number.active {
-    background-color: orange;
+    background-color: #EC6724;
     color: white;
     padding: 0.5rem 0.75rem;
 }

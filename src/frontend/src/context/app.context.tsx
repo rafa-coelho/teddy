@@ -46,4 +46,5 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     );
 };
 
+// eslint-disable-next-line
 export const useAppContext = () => useContext(AppContext);
