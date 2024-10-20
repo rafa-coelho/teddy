@@ -14,29 +14,33 @@ const SelectedCustomersPage: React.FC = () => {
     const [customersPerPage, setCustomersPerPage] = useState(16);
     const [isLoading, setIsLoading] = useState(false);
 
-    const { getAllCustomersAsync, unselectMultipleCustomersAsync } = useCustomerService();
+    const { getAllCustomersAsync, cleanSelectedCustomersAsync } = useCustomerService();
     const { showToast } = useToast();
 
     const fetchCustomers = (currentPage: number, customersPerPage: number) => {
+        setIsLoading(true);
         getAllCustomersAsync({
             page: currentPage,
             take: customersPerPage,
             onlySelected: true,
         })
-            .then(setCustomersResponse);
+            .then((customersResponse) => {
+                setCustomersResponse(customersResponse);
+                setIsLoading(false);
+            });
     };
 
     const handleCleanSelectedCustomers = () => {
         setIsLoading(true);
 
-        unselectMultipleCustomersAsync(customersResponse?.list.map(c => c.id) || [])
+        cleanSelectedCustomersAsync()
             .then((response) => {
                 if (response && 'message' in response) {
                     showToast(response.message, 'error', 'top-right');
                     return;
                 }
 
-                showToast('Clientes desselecionados com sucesso.', 'success', 'top-right');
+                showToast('Lista limpa com sucesso.', 'success', 'top-right');
                 fetchCustomers(currentPage, customersPerPage);
             })
             .finally(() => {

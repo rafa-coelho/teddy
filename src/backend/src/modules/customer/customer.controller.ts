@@ -32,6 +32,11 @@ export class CustomerController {
     return await this.customerService.findAllAsync(page, limit, onlySelected);
   }
 
+  @Put('clean-selected')
+  async unselectMultiple() {
+    return await this.customerService.cleanSelectedAsync();
+  }
+
   @Put(':id')
   async update(
     @Param('id') id: string,
@@ -43,10 +48,5 @@ export class CustomerController {
   @Delete(':id')
   async remove(@Param('id') id: string) {
     return await this.customerService.removeAsync(id);
-  }
-
-  @Put('unselect-multiple')
-  async unselectMultiple(@Body() ids: string[]) {
-    return await this.customerService.unselectMultipleAsync(ids);
   }
 }

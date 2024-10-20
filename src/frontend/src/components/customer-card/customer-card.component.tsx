@@ -136,19 +136,13 @@ const CustomerCard: React.FC<CustomerCardProps> & { Skeleton: React.FC } = (prop
 CustomerCard.Skeleton = () => {
     return (
         <div className="customer-card-skeleton">
-            <div className="skeleton-title"></div>
-            <div className="skeleton-line"></div>
-            <div className="skeleton-line"></div>
+            <div className="skeleton-title" />
+            <div className="skeleton-line" />
+            <div className="skeleton-line" />
             <div className="skeleton-actions">
-                <div className="skeleton-button">
-                    <span className="material-icons">info</span>
-                </div>
-                <div className="skeleton-button">
-                    <span className="material-icons">edit</span>
-                </div>
-                <div className="skeleton-button">
-                    <span className="material-icons">delete</span>
-                </div>
+                <div className="skeleton-button" />
+                <div className="skeleton-button" />
+                <div className="skeleton-button" />
             </div>
         </div>
     );

@@ -125,24 +125,22 @@ const useCustomerService = () => {
         }
     };
 
-    const unselectMultipleCustomersAsync = async (ids: string[]): Promise<void | ErrorResponse> => {
+    const cleanSelectedCustomersAsync = async (): Promise<void | ErrorResponse> => {
         if (state.isMocked) {
             mockData.forEach((c) => {
-                if (ids.includes(c.id!)) {
-                    c.selected = false;
-                }
+                c.selected = false;
             });
             return;
         }
 
         try {
-            await axios.put(`${apiUrl}/unselect-multiple`, { ids });
+            await axios.put(`${apiUrl}/clean-selected`);
         } catch (error) {
             return handleApiError(error);
         }
     };
 
-    return { getAllCustomersAsync, createCustomerAsync, updateCustomerAsync, deleteCustomerAsync, unselectMultipleCustomersAsync };
+    return { getAllCustomersAsync, createCustomerAsync, updateCustomerAsync, deleteCustomerAsync, cleanSelectedCustomersAsync };
 };
 
 export default useCustomerService;

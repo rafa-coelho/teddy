@@ -52,12 +52,12 @@ export class CustomerService {
     await this.customerRepository.delete(id);
   }
 
-  async unselectMultipleAsync(ids: string[]) {
-    await this.customerRepository
-      .createQueryBuilder()
-      .update(Customer)
-      .set({ selected: false })
-      .whereInIds(ids)
-      .execute();
+  async cleanSelectedAsync() {
+    await this.customerRepository.update(
+      {
+        selected: true,
+      },
+      { selected: false },
+    );
   }
 }

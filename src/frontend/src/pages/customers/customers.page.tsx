@@ -20,11 +20,15 @@ const CustomersPage: React.FC = () => {
     const { showToast } = useToast();
 
     const fetchCustomers = (currentPage: number, customersPerPage: number) => {
+        setIsLoading(true);
         getAllCustomersAsync({
             page: currentPage,
             take: customersPerPage,
         })
-            .then(setCustomersResponse);
+            .then((customersResponse) => {
+                setCustomersResponse(customersResponse);
+                setIsLoading(false);
+            });
     };
 
     const handleSave = (customer: Partial<CustomerModel>) => {
