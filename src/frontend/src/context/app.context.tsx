@@ -1,4 +1,5 @@
 import { createContext, ReactNode, useContext, useReducer, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 
 export interface AppState {
     userName?: string;
@@ -34,16 +35,16 @@ const AppContext = createContext<{ state: AppState; dispatch: React.Dispatch<App
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [state, dispatch] = useReducer(appReducer, initialState);
-    const location = window.location.pathname;
+    const location = useLocation();
 
     useEffect(() => {
-        if (!["/", "/home"].includes(location)) {
+        if (!["/", "/home"].includes(location.pathname)) {
             if (state.userName === undefined) {
                 window.location.href = "/home";
             }
         }
 
-        if(location === "/logout") {
+        if(location.pathname === "/logout") {
             dispatch({ type: 'SET_USER_NAME', payload: undefined });
             window.location.href = "/home";
         }
