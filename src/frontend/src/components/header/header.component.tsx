@@ -1,5 +1,6 @@
 import React from 'react';
 import './header.component.css';
+import { useAppContext } from '../../context/app.context';
 
 interface HeaderProps {
     onToggleDrawerClick?: () => void;
@@ -8,6 +9,8 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = (props) => {
+
+    const { state } = useAppContext();
 
     const ulLinks = [
         { name: 'Clientes', route: '/customers' },
@@ -42,7 +45,7 @@ const Header: React.FC<HeaderProps> = (props) => {
                         }
                     </ul>
                 </nav>
-                <span>Olá, <strong>{props.userName || "Usuário"} </strong></span>
+                <span>Olá, <strong>{state.userName || "Usuário"} </strong></span>
             </div>
 
         </header>
