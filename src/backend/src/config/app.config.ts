@@ -1,3 +1,6 @@
+import dotenv from 'dotenv';
+
+dotenv.config();
 const {
   NODE_ENV,
   PORT,
@@ -11,11 +14,11 @@ const {
 
 const appConfig = {
   nodeEnv: NODE_ENV,
-  port: parseInt(PORT, 10),
+  port: parseInt(PORT as string, 10),
   db: {
     type: DB_TYPE as 'postgres' | 'sqlite' | 'mysql' | 'mariadb' | 'mssql',
     host: DB_HOST,
-    port: parseInt(DB_PORT, 10),
+    port: parseInt(DB_PORT as string, 10),
     username: DB_USERNAME,
     password: DB_PASSWORD,
     name: DB_NAME,

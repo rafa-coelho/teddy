@@ -13,4 +13,7 @@ export class Customer {
 
   @Column('decimal', { precision: 7, scale: 2 })
   companyValue: number;
+
+  @Column('boolean', { default: false })
+  selected: boolean;
 }
