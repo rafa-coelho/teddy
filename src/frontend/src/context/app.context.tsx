@@ -2,10 +2,12 @@ import { createContext, ReactNode, useContext, useReducer, useEffect } from 'rea
 
 export interface AppState {
     userName?: string;
+    isMocked?: boolean;
 }
 
 const initialState: AppState = {
     userName: localStorage.getItem('userName') || undefined,
+    isMocked: import.meta.env.VITE_APP_IS_MOCKED === 'true' || false,
 };
 
 export type AppAction = { type: 'SET_USER_NAME', payload: string };

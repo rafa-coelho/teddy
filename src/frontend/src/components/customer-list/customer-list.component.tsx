@@ -16,7 +16,7 @@ const CustomerList: React.FC<CustomerListProps> = (props) => {
         <>
             <div className="controls">
                 <span>
-                    Exibindo {Math.min(props.customersPerPage, props.data.list.length)} de{' '} {props.data.totalCount} clientes
+                    <strong>{props.data.totalCount}</strong> clientes encontrados:
                 </span>
                 <div>
                     <span>Clientes por página: </span>
@@ -44,7 +44,7 @@ const CustomerList: React.FC<CustomerListProps> = (props) => {
                             key={index}
                             name={customer.name}
                             salary={customer.salary}
-                            company={customer.company}
+                            companyValue={customer.companyValue}
                         />
                     ))}
                 </div>

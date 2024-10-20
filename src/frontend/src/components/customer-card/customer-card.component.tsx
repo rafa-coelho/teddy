@@ -4,10 +4,10 @@ import './customer-card.component.css';
 interface CustomerCardProps {
     name: string;
     salary: number;
-    company: number;
+    companyValue: number;
 }
 
-const CustomerCard: React.FC<CustomerCardProps> = ({ name, salary, company }) => {
+const CustomerCard: React.FC<CustomerCardProps> = ({ name, salary, companyValue: company }) => {
 
     const moneyFormatter = new Intl.NumberFormat('pt-BR', {
         style: 'currency',
