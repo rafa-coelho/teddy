@@ -4,6 +4,7 @@ import { UpdateCustomerDto } from './dto/update-customer.dto';
 import { Customer } from './entities/customer.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import ResponseListData from 'src/data/response-list.data';
 
 @Injectable()
 export class CustomerService {
@@ -19,11 +20,15 @@ export class CustomerService {
   async findAllAsync(
     page: number = 0,
     limit: number = 16,
-  ): Promise<Customer[]> {
-    return await this.customerRepository.find({
+    onlySelected: boolean = false,
+  ): Promise<Promise<ResponseListData<Customer>>> {
+    const [list, totalCount] = await this.customerRepository.findAndCount({
+      where: onlySelected ? { selected: true } : {},
       take: limit,
-      skip: page * limit,
+      skip: (page - 1) * limit,
+      order: { createdAt: 'ASC' },
     });
+    return { list, totalCount };
   }
 
   async findOneAsync(id: string): Promise<Customer> {
@@ -45,5 +50,14 @@ export class CustomerService {
   async removeAsync(id: string): Promise<void> {
     await this.findOneAsync(id);
     await this.customerRepository.delete(id);
+  }
+
+  async unselectMultipleAsync(ids: string[]) {
+    await this.customerRepository
+      .createQueryBuilder()
+      .update(Customer)
+      .set({ selected: false })
+      .whereInIds(ids)
+      .execute();
   }
 }

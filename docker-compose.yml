@@ -4,6 +4,7 @@ services:
     build: ./src/backend
     ports:
       - "3000:3000"
+      - "9229:9229"
     volumes:
       - ./src/backend:/app
       - /app/node_modules
@@ -33,7 +34,7 @@ services:
       NODE_ENV: development
       CHOKIDAR_USEPOLLING: "true"
       VITE_API_URL: http://localhost:3000
-      VITE_APP_IS_MOCKED: true
+      VITE_APP_IS_MOCKED: false
     depends_on:
       - backend
 

@@ -59,9 +59,9 @@ const CustomerList: React.FC<CustomerListProps> = (props) => {
             {
                 !props.isLoading && props.data.list.length > 0 &&
                 <div className="customer-list">
-                    {props.data.list.map((customer, index) => (
+                    {props.data.list.map((customer) => (
                         <CustomerCard
-                            key={index}
+                            key={customer.id}
                             customerData={customer}
                             onSuccess={props.refreshData}
                             isSelectedList={props.isSelectedList}

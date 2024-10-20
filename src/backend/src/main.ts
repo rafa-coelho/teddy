@@ -5,6 +5,7 @@ import appConfig from './config/app.config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.enableCors();
 
   app.useGlobalFilters(new AnyExceptionFilter());
 
