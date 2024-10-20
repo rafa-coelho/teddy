@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './home.page.css';
 import { useToast } from '../../components/toast/toast.hook';
+import { useAppContext } from '../../context/app.context';
 
 const HomePage: React.FC = () => {
     const [name, setName] = useState<string>('');
     const { showToast } = useToast();
+    const { dispatch } = useAppContext();
     const navigate = useNavigate();
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -16,6 +18,7 @@ const HomePage: React.FC = () => {
         }
 
         showToast(`Bem-vindo, ${name}!`, 'success', 'top-right');
+        dispatch({ type: 'SET_USER_NAME', payload: name });
 
         navigate('/customers');
     };
