@@ -24,9 +24,16 @@ const useCustomerService = () => {
         };
     };
 
-    const getAllCustomersAsync = async (page = 1, take = 16): Promise<ResponseListData<CustomerModel>> => {
-        if (state.isMocked) {
+    type GetCustomersParams = {
+        onlySelected?: boolean;
+        page: number;
+        take: number;
+    };
 
+    const getAllCustomersAsync = async (props: GetCustomersParams = { page: 1, take: 16, onlySelected: false }): Promise<ResponseListData<CustomerModel>> => {
+        const { page, take, onlySelected } = props;
+
+        if (state.isMocked) {
             if (mockData == undefined) {
                 mockData = Array(30)
                     .fill(0)
@@ -35,22 +42,24 @@ const useCustomerService = () => {
                         name: `Cliente ${(index + 1) + (page - 1) * take}`,
                         salary: parseFloat((Math.random() * 10000).toFixed(2)),
                         companyValue: parseFloat((Math.random() * 10000).toFixed(2)),
+                        selected: false,
                     }));
             }
 
-            const total = mockData.length;
-            const currentPageTotal = Math.min(take, total - (page - 1) * take);
+            const customers: CustomerModel[] = mockData
+                .filter((c) => (onlySelected ? c.selected : true));
 
-            const customers: CustomerModel[] = mockData.slice((page - 1) * take, (page - 1) * take + currentPageTotal);
+            const total = customers.length;
+            const currentPageTotal = Math.min(take, total - (page - 1) * take);
 
             return {
                 totalCount: total,
-                list: customers,
+                list: customers.slice((page - 1) * take, (page - 1) * take + currentPageTotal),
             };
         }
 
         const response = await axios.get<ResponseListData<CustomerModel>>(apiUrl, {
-            params: { page, take },
+            params: { page, take, onlySelected },
         });
 
         return response.data;
@@ -60,8 +69,6 @@ const useCustomerService = () => {
         customer: Partial<CustomerModel>
     ): Promise<CustomerModel | ErrorResponse> => {
         if (state.isMocked) {
-            console.log('Creating customer:', customer);
-
             const newCustomer: CustomerModel = {
                 ...customer as CustomerModel,
                 id: Math.random().toString(),
@@ -84,8 +91,6 @@ const useCustomerService = () => {
         customer: Partial<CustomerModel>
     ): Promise<void | ErrorResponse> => {
         if (state.isMocked) {
-            console.log('Updating customer:', id, customer);
-
             const index = mockData.findIndex((c) => c.id === id);
             if (index >= 0) {
                 mockData[index] = { ...mockData[index], ...customer };
@@ -104,8 +109,6 @@ const useCustomerService = () => {
 
     const deleteCustomerAsync = async (id: string): Promise<void | ErrorResponse> => {
         if (state.isMocked) {
-            console.log('Deleting customer:', id);
-
             const index = mockData.findIndex((c) => c.id === id);
             if (index >= 0) {
                 mockData.splice(index, 1);
@@ -120,10 +123,26 @@ const useCustomerService = () => {
         } catch (error) {
             return handleApiError(error);
         }
-    }
+    };
 
+    const unselectMultipleCustomersAsync = async (ids: string[]): Promise<void | ErrorResponse> => {
+        if (state.isMocked) {
+            mockData.forEach((c) => {
+                if (ids.includes(c.id!)) {
+                    c.selected = false;
+                }
+            });
+            return;
+        }
 
-    return { getAllCustomersAsync, createCustomerAsync, updateCustomerAsync, deleteCustomerAsync };
+        try {
+            await axios.put(`${apiUrl}/unselect-multiple`, { ids });
+        } catch (error) {
+            return handleApiError(error);
+        }
+    };
+
+    return { getAllCustomersAsync, createCustomerAsync, updateCustomerAsync, deleteCustomerAsync, unselectMultipleCustomersAsync };
 };
 
 export default useCustomerService;

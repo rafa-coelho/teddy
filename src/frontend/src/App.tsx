@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { ToastProvider } from './components/toast/toast.context';
 import HomePage from './pages/home/home.page';
 import CustomersPage from './pages/customers/customers.page';
+import SelectedCustomersPage from './pages/selected-customers/selected-customers.page';
 
 const App: React.FC = () => {
   return (
@@ -12,6 +13,7 @@ const App: React.FC = () => {
           <Route path="/" element={<Navigate to="/home" />} />
           <Route path="/home" element={<HomePage />} />
           <Route path="/customers" element={<CustomersPage />} />
+          <Route path="/customers/selected" element={<SelectedCustomersPage />} />
         </Routes>
       </Router>
     </ToastProvider>

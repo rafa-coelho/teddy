@@ -3,4 +3,5 @@ export type CustomerModel = {
     name: string;
     salary: number;
     companyValue: number;
+    selected: boolean;
 };

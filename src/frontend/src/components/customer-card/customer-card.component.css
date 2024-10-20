@@ -25,3 +25,64 @@
   justify-content: center;
   background-color: transparent;
 }
+
+.customer-card .card-actions.selected-list {
+  justify-content: flex-end;
+}
+
+.customer-card-skeleton {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  padding: 16px;
+  height: 150px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin: 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+.skeleton-title, .skeleton-line {
+  background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+}
+
+.skeleton-title {
+  width: 60%;
+  height: 20px;
+  margin-bottom: 12px;
+}
+
+.skeleton-line {
+  width: 80%;
+  height: 15px;
+  margin-bottom: 8px;
+}
+
+.skeleton-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  width: 100%;
+}
+
+.skeleton-button {
+  width: 30px;
+  height: 30px;
+  background-color: #e0e0e0;
+  border-radius: 8px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}

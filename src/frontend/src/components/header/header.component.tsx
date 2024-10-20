@@ -1,6 +1,7 @@
 import React from 'react';
 import './header.component.css';
 import { useAppContext } from '../../context/app.context';
+import { Link } from 'react-router-dom';
 
 interface HeaderProps {
     onToggleDrawerClick?: () => void;
@@ -14,7 +15,7 @@ const Header: React.FC<HeaderProps> = (props) => {
 
     const ulLinks = [
         { name: 'Clientes', route: '/customers' },
-        { name: 'Clientes selecionados', route: '/selected-customers' },
+        { name: 'Clientes selecionados', route: '/customers/selected' },
         { name: 'Sair', route: '/logout' }
     ];
 
@@ -38,8 +39,17 @@ const Header: React.FC<HeaderProps> = (props) => {
                     <ul>
                         {
                             ulLinks.map((link, index) => (
-                                <li key={index} className={props.currentRoute === link.route ? 'selected' : ''}>
-                                    {link.name}
+                                <li key={index}>
+                                    <Link
+                                        to={link.route}
+                                        className={
+                                            location.pathname === link.route
+                                                ? 'selected'
+                                                : ''
+                                        }
+                                    >
+                                        {link.name}
+                                    </Link>
                                 </li>
                             ))
                         }

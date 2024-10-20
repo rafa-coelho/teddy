@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './customer-card.component.css';
 import { CustomerModal, useCustomerModal } from '../customer-modal';
 import { CustomerModel } from '../../data/models/customer.model';
@@ -11,19 +11,20 @@ import useConfirmDeleteModal from '../confirm-delete-modal/confirm-delete-modal.
 interface CustomerCardProps {
     customerData: CustomerModel;
     onSuccess?: () => void;
+    isSelectedList?: boolean;
 }
 
-const CustomerCard: React.FC<CustomerCardProps> = (props) => {
+const CustomerCard: React.FC<CustomerCardProps> & { Skeleton: React.FC } = (props) => {
     const { isOpen: isEditModalOpen, openModal, closeModal: closeEditModal } = useCustomerModal();
     const { isOpen: isDeleteModalOpen, openModal: openDeleteModal, closeModal: closeDeleteModal, confirm } = useConfirmDeleteModal();
-
-    const [isLoading, setIsLoading] = React.useState(false);
     const { updateCustomerAsync, deleteCustomerAsync } = useCustomerService();
     const { showToast } = useToast();
 
+    const [isLoading, setIsLoading] = useState(false);
+    const [isSelected, setIsSelected] = useState(props.customerData.selected || false);
 
     const handleSave = (customer: CustomerModel) => {
-        setIsLoading(false);
+        setIsLoading(true);
 
         updateCustomerAsync(customer.id!, customer)
             .then((response) => {
@@ -41,6 +42,33 @@ const CustomerCard: React.FC<CustomerCardProps> = (props) => {
             .finally(() => {
                 setIsLoading(false);
             });
+    };
+
+    const handleAddOrRemove = () => {
+        const updatedCustomer = {
+            ...props.customerData,
+            selected: !isSelected,
+        };
+
+        updateCustomerAsync(props.customerData.id!, updatedCustomer)
+            .then((response) => {
+                if (response && 'message' in response) {
+                    showToast(response.message, 'error', 'top-right');
+                    return;
+                }
+
+                setIsSelected(!isSelected);
+                showToast(
+                    isSelected ? 'Cliente removido da seleção.' : 'Cliente adicionado à seleção.',
+                    'success',
+                    'top-right'
+                );
+
+                if (props.onSuccess) {
+                    props.onSuccess();
+                }
+            })
+            .finally(() => setIsLoading(false));
     };
 
     const handleDelete = () => {
@@ -63,21 +91,26 @@ const CustomerCard: React.FC<CustomerCardProps> = (props) => {
             });
     };
 
-
     return (
         <>
             <div className="customer-card">
                 <h3>{props.customerData.name}</h3>
                 <p>Salário: {formatCurrency(props.customerData.salary.toString())}</p>
                 <p>Empresa: {formatCurrency(props.customerData.companyValue.toString())}</p>
-                <div className="card-actions">
-                    <button>➕</button>
-                    <button onClick={() => openModal()}>✏️</button>
-                    <button onClick={() => openDeleteModal(props.customerData.name, handleDelete)}>🗑️</button>
+                <div className={`card-actions ${props.isSelectedList ? 'selected-list' : ''}`}>
+                    {props.isSelectedList ? (
+                        <button onClick={handleAddOrRemove} className="remove-button">➖</button>
+                    ) : (
+                        <>
+                            <button onClick={handleAddOrRemove}>{isSelected ? '➖' : '➕'}</button>
+                            <button onClick={() => openModal()}>✏️</button>
+                            <button onClick={() => openDeleteModal(props.customerData.name, handleDelete)}>🗑️</button>
+                        </>
+                    )}
                 </div>
             </div>
-            {
-                isEditModalOpen &&
+
+            {isEditModalOpen && (
                 <CustomerModal
                     isOpen={isEditModalOpen}
                     onClose={closeEditModal}
@@ -85,20 +118,40 @@ const CustomerCard: React.FC<CustomerCardProps> = (props) => {
                     initialData={props.customerData}
                     loading={isLoading}
                 />
-            }
+            )}
 
-            {
-                isDeleteModalOpen &&
+            {isDeleteModalOpen && (
                 <ConfirmDeleteModal
                     isOpen={isDeleteModalOpen}
                     customerName={props.customerData.name}
                     onClose={closeDeleteModal}
                     onConfirm={confirm}
                 />
-            }
+            )}
         </>
     );
 };
 
-export default CustomerCard;
 
+CustomerCard.Skeleton = () => {
+    return (
+        <div className="customer-card-skeleton">
+            <div className="skeleton-title"></div>
+            <div className="skeleton-line"></div>
+            <div className="skeleton-line"></div>
+            <div className="skeleton-actions">
+                <div className="skeleton-button">
+                    <span className="material-icons">info</span>
+                </div>
+                <div className="skeleton-button">
+                    <span className="material-icons">edit</span>
+                </div>
+                <div className="skeleton-button">
+                    <span className="material-icons">delete</span>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export default CustomerCard;

@@ -1,54 +1,50 @@
 import React, { useEffect, useState } from 'react';
 import CustomerList from '../../components/customer-list/customer-list.component';
-import './customers.page.css';
+import './selected-customers.page.css';
 import { CustomerModel } from '../../data/models/customer.model';
 import Container from '../../components/container/container.component';
 import ResponseListData from '../../data/response-list.data';
 import Pagination from '../../components/pagination/pagination.component';
-import { CustomerModal, useCustomerModal } from '../../components/customer-modal';
 import useCustomerService from '../../hooks/use-customer-service.hook';
 import { useToast } from '../../components/toast/toast.hook';
 
-const CustomersPage: React.FC = () => {
+const SelectedCustomersPage: React.FC = () => {
     const [customersResponse, setCustomersResponse] = useState<ResponseListData<CustomerModel> | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [customersPerPage, setCustomersPerPage] = useState(16);
     const [isLoading, setIsLoading] = useState(false);
 
-    const { isOpen, openModal, closeModal } = useCustomerModal();
-    const { getAllCustomersAsync, createCustomerAsync, updateCustomerAsync } = useCustomerService();
+    const { getAllCustomersAsync, unselectMultipleCustomersAsync } = useCustomerService();
     const { showToast } = useToast();
 
     const fetchCustomers = (currentPage: number, customersPerPage: number) => {
         getAllCustomersAsync({
             page: currentPage,
             take: customersPerPage,
+            onlySelected: true,
         })
             .then(setCustomersResponse);
     };
 
-    const handleSave = (customer: Partial<CustomerModel>) => {
-        setIsLoading(false);
+    const handleCleanSelectedCustomers = () => {
+        setIsLoading(true);
 
-        const isEditing = customer.id !== undefined;
-        (
-            (isEditing)
-                ? updateCustomerAsync(customer.id!, customer)
-                : createCustomerAsync(customer)
-        )
+        unselectMultipleCustomersAsync(customersResponse?.list.map(c => c.id) || [])
             .then((response) => {
                 if (response && 'message' in response) {
                     showToast(response.message, 'error', 'top-right');
                     return;
                 }
 
+                showToast('Clientes desselecionados com sucesso.', 'success', 'top-right');
                 fetchCustomers(currentPage, customersPerPage);
-                showToast('Cliente salvo com sucesso.', 'success', 'top-right');
             })
             .finally(() => {
                 setIsLoading(false);
             });
     };
+
+
 
     useEffect(() => {
         fetchCustomers(currentPage, customersPerPage);
@@ -65,14 +61,17 @@ const CustomersPage: React.FC = () => {
                 customersPerPage={customersPerPage}
                 setCustomersPerPage={setCustomersPerPage}
                 refreshData={() => fetchCustomers(currentPage, customersPerPage)}
+                isSelectedList
+                isLoading={isLoading}
             />
 
             <button
-                className="add-customer-button"
+                className="clean-selected-customer-button"
                 type='button'
-                onClick={() => openModal()}
+                onClick={handleCleanSelectedCustomers}
+                disabled={isLoading || customersResponse.list.length === 0}
             >
-                Criar Cliente
+                Limpar clientes selecionados
             </button>
 
             <Pagination
@@ -81,15 +80,8 @@ const CustomersPage: React.FC = () => {
                 onPageChange={setCurrentPage}
             />
 
-            <CustomerModal
-                isOpen={isOpen}
-                onClose={closeModal}
-                onSave={handleSave}
-                loading={isLoading}
-            />
-
         </Container>
     );
 };
 
-export default CustomersPage;
+export default SelectedCustomersPage;

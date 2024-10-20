@@ -1,0 +1,23 @@
+.clean-selected-customer-button {
+    margin: 20px 0;
+    color: #EC6724;
+    display: block;
+    width: 100%;
+    border: 2px solid #EC6724;
+    font-weight: bold;
+    padding: 10px;
+    border-radius: 9px;
+    cursor: pointer;
+}
+
+.clean-selected-customer-button:hover {
+    background-color: #EC6724;
+    color: white;
+}
+
+.clean-selected-customer-button:disabled {
+    background-color: #ccc;
+    color: #666;
+    border-color: #ccc;
+    cursor: not-allowed;
+}

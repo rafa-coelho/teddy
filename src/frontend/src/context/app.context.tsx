@@ -10,11 +10,16 @@ const initialState: AppState = {
     isMocked: import.meta.env.VITE_APP_IS_MOCKED === 'true' || false,
 };
 
-export type AppAction = { type: 'SET_USER_NAME', payload: string };
+export type AppAction = { type: 'SET_USER_NAME', payload: string | undefined };
 
 function appReducer(state: AppState, action: AppAction): AppState {
     switch (action.type) {
         case 'SET_USER_NAME':
+            if(action.payload === undefined) {
+                localStorage.removeItem('userName');
+                return { ...state, userName: action.payload };
+            }
+
             localStorage.setItem('userName', action.payload);
             return { ...state, userName: action.payload };
         default:
@@ -36,6 +41,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             if (state.userName === undefined) {
                 window.location.href = "/home";
             }
+        }
+
+        if(location === "/logout") {
+            dispatch({ type: 'SET_USER_NAME', payload: undefined });
+            window.location.href = "/home";
         }
     }, [location, state.userName]);
 
