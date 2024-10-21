@@ -1,6 +1,9 @@
-type ResponseListData<T> = {
-  list: T[];
-  totalCount: number;
-};
+import { ApiProperty } from '@nestjs/swagger';
 
-export default ResponseListData;
+export class ResponseListData<T> {
+  @ApiProperty({ description: 'Lista de itens', isArray: true })
+  list: T[];
+
+  @ApiProperty({ description: 'Número total de itens' })
+  totalCount: number;
+}

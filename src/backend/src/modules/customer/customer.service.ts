@@ -4,7 +4,7 @@ import { UpdateCustomerDto } from './dto/update-customer.dto';
 import { Customer } from './entities/customer.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import ResponseListData from 'src/data/response-list.data';
+import { ResponseListData } from 'src/data/response-list.data';
 
 @Injectable()
 export class CustomerService {
