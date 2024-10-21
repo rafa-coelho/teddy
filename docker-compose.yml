@@ -4,12 +4,11 @@ services:
     build: ./src/backend
     ports:
       - "3000:3000"
-      - "9229:9229"
     volumes:
       - ./src/backend:/app
       - /app/node_modules
     environment:
-      NODE_ENV: development
+      NODE_ENV: production
       PORT: 3000
       DB_TYPE: postgres
       DB_HOST: db
@@ -31,7 +30,7 @@ services:
       - /app/node_modules
     command: npm run dev
     environment:
-      NODE_ENV: development
+      NODE_ENV: production
       CHOKIDAR_USEPOLLING: "true"
       VITE_API_URL: http://localhost:3000
       VITE_APP_IS_MOCKED: false
