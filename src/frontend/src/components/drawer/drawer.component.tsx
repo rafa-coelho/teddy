@@ -1,28 +1,49 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './drawer.component.css';
+import { LeftArrow } from '../icons/icons.component';
+import { RiHome5Fill, RiUserFill } from 'react-icons/ri';
+import { PiSquaresFourFill } from 'react-icons/pi';
 
-const Drawer: React.FC = () => {
-    const [isOpen, setIsOpen] = useState(false);
+interface DrawerProps {
+    isOpen: boolean;
+    onCloseDrawer: () => void;
+}
 
-    const toggleDrawer = () => setIsOpen(!isOpen);
-
+const Drawer: React.FC<DrawerProps> = ({ isOpen, onCloseDrawer }) => {
     return (
-        <div>
-            <button className="toggle-button" onClick={toggleDrawer}>
-                {isOpen ? '←' : '☰'}
-            </button>
-            <aside className={`drawer ${isOpen ? 'open' : 'closed'}`}>
-                <div className="drawer-content">
-                    <img src="/logo.png" alt="Teddy Logo" className="drawer-logo" />
-                    <nav>
-                        <ul>
-                            <li>Início</li>
-                            <li className="active">Clientes</li>
-                            <li>Produtos</li>
-                        </ul>
-                    </nav>
-                </div>
-            </aside>
+        <div className={`drawer ${isOpen ? 'open' : ''}`}>
+            <div className="drawer-header">
+                <img src="/teddy-logo.png" alt="Logo" className="drawer-logo" />
+            </div>
+            {
+                isOpen && (
+                    <button className="toggle-button" onClick={onCloseDrawer}>
+                        <LeftArrow />
+                    </button>
+                )
+            }
+            <div className="drawer-content">
+                <ul>
+                    <li>
+                        <span className="icon">
+                            <RiHome5Fill />
+                        </span>
+                        <span className="text">Home</span>
+                    </li>
+                    <li className="active">
+                        <span className="icon">
+                            <RiUserFill />
+                        </span>
+                        <span className="text">Clientes</span>
+                    </li>
+                    <li>
+                        <span className="icon">
+                            <PiSquaresFourFill />
+                        </span>
+                        <span className="text">Produtos</span>
+                    </li>
+                </ul>
+            </div>
         </div>
     );
 };

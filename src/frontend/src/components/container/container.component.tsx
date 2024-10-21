@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Drawer from "../drawer/drawer.component";
 import Header from "../header/header.component";
 import './container.component.css';
@@ -12,12 +13,12 @@ interface ContainerComponent extends React.FC<ContainerProps> {
 }
 
 const Container: ContainerComponent = (props) => {
-    const currentLocation = window.location.pathname;
+    const [ isDrawerOpen, setIsDrawerOpen ] = useState(false);
     return (
         <div className="container">
-            <Drawer />
+            <Drawer isOpen={isDrawerOpen} onCloseDrawer={() => setIsDrawerOpen(false)} />
             <div className="main-content">
-                <Header currentRoute={currentLocation} userName={props.userName} onToggleDrawerClick={() => { }} />
+                <Header onToggleDrawerClick={() => setIsDrawerOpen(!isDrawerOpen)} />
                 <div className="page-content">
                     {props.children}
                 </div>
@@ -29,11 +30,10 @@ const Container: ContainerComponent = (props) => {
 Container.displayName = 'Container';
 
 Container.Skeleton = () => {
-    const currentLocation = window.location.pathname;
     return (
         <div className="container">
             <div className="main-content">
-                <Header currentRoute={currentLocation} onToggleDrawerClick={() => { }} />
+                <Header onToggleDrawerClick={() => { }} />
                 <div className="page-content">
                     <div className="page-content-skeleton"></div>
                 </div>

@@ -5,8 +5,6 @@ import { Link } from 'react-router-dom';
 
 interface HeaderProps {
     onToggleDrawerClick?: () => void;
-    userName?: string;
-    currentRoute?: string;
 }
 
 const Header: React.FC<HeaderProps> = (props) => {
