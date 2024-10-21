@@ -49,3 +49,26 @@ nav ul li a:hover {
     font-size: 24px;
     cursor: pointer;
 }
+
+
+@media (max-width: 768px) {
+    .header {
+        padding: 1rem;
+    }
+
+    .header-center {
+        margin: 0;
+    }
+
+    .logo {
+        margin-right: 1rem;
+    }
+
+    nav ul {
+        display: none;
+    }
+
+    .toggle-drawer-button {
+        display: block;
+    }
+}

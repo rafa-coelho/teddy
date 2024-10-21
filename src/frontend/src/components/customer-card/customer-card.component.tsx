@@ -7,6 +7,9 @@ import { useToast } from '../toast/toast.hook';
 import { formatCurrency } from '../../utils';
 import ConfirmDeleteModal from '../confirm-delete-modal/confirm-delete-modal.component';
 import useConfirmDeleteModal from '../confirm-delete-modal/confirm-delete-modal.hook';
+import { FaMinus, FaPlus } from 'react-icons/fa';
+import { RiPencilLine } from 'react-icons/ri';
+import { GoTrash } from 'react-icons/go';
 
 interface CustomerCardProps {
     customerData: CustomerModel;
@@ -99,12 +102,22 @@ const CustomerCard: React.FC<CustomerCardProps> & { Skeleton: React.FC } = (prop
                 <p>Empresa: {formatCurrency(props.customerData.companyValue.toString())}</p>
                 <div className={`card-actions ${props.isSelectedList ? 'selected-list' : ''}`}>
                     {props.isSelectedList ? (
-                        <button onClick={handleAddOrRemove} className="remove-button">➖</button>
+                        <button onClick={handleAddOrRemove} className="remove-button"><FaMinus color='red' /></button>
                     ) : (
                         <>
-                            <button onClick={handleAddOrRemove}>{isSelected ? '➖' : '➕'}</button>
-                            <button onClick={() => openModal()}>✏️</button>
-                            <button onClick={() => openDeleteModal(props.customerData.name, handleDelete)}>🗑️</button>
+                            <button onClick={handleAddOrRemove}>
+                                {
+                                    isSelected
+                                        ? <FaMinus color='red' />
+                                        : <FaPlus />
+                                }
+                            </button>
+                            <button onClick={() => openModal()}>
+                                <RiPencilLine />
+                            </button>
+                            <button onClick={() => openDeleteModal(props.customerData.name, handleDelete)}>
+                                <GoTrash color='red' />
+                            </button>
                         </>
                     )}
                 </div>

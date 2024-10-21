@@ -37,3 +37,17 @@
 .welcome-form button:hover {
     background-color: #e65c00;
 }
+
+@media (max-width: 768px) {
+    .welcome-form {
+        width: 80%;
+    }
+
+    .welcome-form input {
+        width: 100%;
+    }
+
+    .welcome-form button {
+        width: 100%;
+    }
+}
