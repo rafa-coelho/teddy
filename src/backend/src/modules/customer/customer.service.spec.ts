@@ -1,59 +1,60 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, HttpStatus, HttpException } from '@nestjs/common';
-import request from 'supertest';
-import { CustomerController } from './customer.controller';
 import { CustomerService } from './customer.service';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { Customer } from './entities/customer.entity';
+import { HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { CreateCustomerDto } from './dto/create-customer.dto';
-import { AnyExceptionFilter } from '../../filters/any-exception.filter';
+import { UpdateCustomerDto } from './dto/update-customer.dto';
 
-const mockCustomerService = {
-  createAsync: jest.fn(),
-  findAllAsync: jest.fn(),
-  cleanSelectedAsync: jest.fn(),
-  updateAsync: jest.fn(),
-  removeAsync: jest.fn(),
+const mockCustomer: Customer = {
+  id: '1',
+  name: 'Fulano',
+  salary: 5000,
+  companyValue: 20000,
+  selected: false,
+  createdAt: new Date(),
 };
 
-describe('CustomerController (e2e)', () => {
-  let app: INestApplication;
+const mockCustomerRepository = {
+  save: jest.fn(),
+  findAndCount: jest.fn(),
+  findOne: jest.fn(),
+  update: jest.fn(),
+  delete: jest.fn(),
+};
 
-  beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      controllers: [CustomerController],
-      providers: [{ provide: CustomerService, useValue: mockCustomerService }],
+describe('CustomerService', () => {
+  let service: CustomerService;
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        CustomerService,
+        {
+          provide: getRepositoryToken(Customer),
+          useValue: mockCustomerRepository,
+        },
+        {
+          provide: Logger,
+          useValue: {
+            log: jest.fn(),
+            error: jest.fn(),
+            warn: jest.fn(),
+          },
+        },
+      ],
     }).compile();
 
-    app = moduleFixture.createNestApplication();
-    app.useGlobalFilters(new AnyExceptionFilter()); // Aplica o filtro globalmente
-    await app.init();
+    service = module.get<CustomerService>(CustomerService);
   });
 
-  afterAll(async () => {
-    await app.close();
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
-  describe('POST /customers', () => {
-    it('should create a customer', async () => {
-      const dto: CreateCustomerDto = {
-        name: 'Fulano',
-        salary: 5000,
-        companyValue: 20000,
-      };
-
-      mockCustomerService.createAsync.mockResolvedValue({ id: '1', ...dto });
-
-      const response = await request(app.getHttpServer())
-        .post('/customers')
-        .send(dto)
-        .expect(HttpStatus.CREATED);
-
-      expect(response.body).toEqual({ id: '1', ...dto });
-    });
-
-    it('should return 500 if service throws an error', async () => {
-      mockCustomerService.createAsync.mockRejectedValue(
-        new Error('Server error'),
-      );
+  describe('createAsync', () => {
+    it('should create a new customer', async () => {
+      mockCustomerRepository.save.mockResolvedValue(mockCustomer);
 
       const dto: CreateCustomerDto = {
         name: 'Fulano',
@@ -61,109 +62,129 @@ describe('CustomerController (e2e)', () => {
         companyValue: 20000,
       };
 
-      const response = await request(app.getHttpServer())
-        .post('/customers')
-        .send(dto)
-        .expect(HttpStatus.INTERNAL_SERVER_ERROR);
+      const result = await service.createAsync(dto);
 
-      expect(response.body).toEqual({
-        statusCode: 500,
-        timestamp: expect.any(String),
-        path: '/customers',
-        message: 'Server error',
-      });
+      expect(result).toEqual(mockCustomer);
+      expect(mockCustomerRepository.save).toHaveBeenCalledWith(dto);
+    });
+
+    it('should log an error if creation fails', async () => {
+      mockCustomerRepository.save.mockRejectedValue(new Error('Save error'));
+
+      const dto: CreateCustomerDto = {
+        name: 'Fulano',
+        salary: 5000,
+        companyValue: 20000,
+      };
+
+      await expect(service.createAsync(dto)).rejects.toThrow('Save error');
     });
   });
 
-  describe('GET /customers', () => {
+  describe('findAllAsync', () => {
     it('should return a list of customers', async () => {
-      const mockResponse = {
-        list: [{ id: '1', name: 'Fulano', salary: 5000, companyValue: 20000 }],
-        totalCount: 1,
-      };
+      mockCustomerRepository.findAndCount.mockResolvedValue([
+        [mockCustomer],
+        1,
+      ]);
 
-      mockCustomerService.findAllAsync.mockResolvedValue(mockResponse);
+      const result = await service.findAllAsync(1, 10, false);
 
-      const response = await request(app.getHttpServer())
-        .get('/customers?page=1&limit=10&onlySelected=false')
-        .expect(HttpStatus.OK);
-
-      expect(response.body).toEqual(mockResponse);
+      expect(result).toEqual({ list: [mockCustomer], totalCount: 1 });
+      expect(mockCustomerRepository.findAndCount).toHaveBeenCalledWith({
+        where: {},
+        take: 10,
+        skip: 0,
+        order: { createdAt: 'ASC' },
+      });
     });
 
-    it('should return 500 if service throws an error', async () => {
-      mockCustomerService.findAllAsync.mockRejectedValue(
-        new Error('Database error'),
-      );
+    it('should return only selected customers', async () => {
+      mockCustomerRepository.findAndCount.mockResolvedValue([
+        [mockCustomer],
+        1,
+      ]);
 
-      const response = await request(app.getHttpServer())
-        .get('/customers?page=1&limit=10&onlySelected=false')
-        .expect(HttpStatus.INTERNAL_SERVER_ERROR);
+      const result = await service.findAllAsync(1, 10, true);
 
-      expect(response.body).toEqual({
-        statusCode: 500,
-        timestamp: expect.any(String),
-        path: '/customers?page=1&limit=10&onlySelected=false',
-        message: 'Database error',
+      expect(result).toEqual({ list: [mockCustomer], totalCount: 1 });
+      expect(mockCustomerRepository.findAndCount).toHaveBeenCalledWith({
+        where: { selected: true },
+        take: 10,
+        skip: 0,
+        order: { createdAt: 'ASC' },
       });
     });
   });
 
-  describe('PUT /customers/clean-selected', () => {
-    it('should clean selected customers', async () => {
-      mockCustomerService.cleanSelectedAsync.mockResolvedValue(undefined);
+  describe('findOneAsync', () => {
+    it('should return a customer by id', async () => {
+      mockCustomerRepository.findOne.mockResolvedValue(mockCustomer);
 
-      await request(app.getHttpServer())
-        .put('/customers/clean-selected')
-        .expect(HttpStatus.OK);
+      const result = await service.findOneAsync('1');
 
-      expect(mockCustomerService.cleanSelectedAsync).toHaveBeenCalled();
-    });
-
-    it('should return 500 if service throws an error', async () => {
-      mockCustomerService.cleanSelectedAsync.mockRejectedValue(
-        new Error('Service error'),
-      );
-
-      const response = await request(app.getHttpServer())
-        .put('/customers/clean-selected')
-        .expect(HttpStatus.INTERNAL_SERVER_ERROR);
-
-      expect(response.body).toEqual({
-        statusCode: 500,
-        timestamp: expect.any(String),
-        path: '/customers/clean-selected',
-        message: 'Service error',
+      expect(result).toEqual(mockCustomer);
+      expect(mockCustomerRepository.findOne).toHaveBeenCalledWith({
+        where: { id: '1' },
       });
     });
-  });
 
-  describe('DELETE /customers/:id', () => {
-    it('should delete a customer', async () => {
-      mockCustomerService.removeAsync.mockResolvedValue(undefined);
+    it('should throw an exception if customer not found', async () => {
+      mockCustomerRepository.findOne.mockResolvedValue(null);
 
-      await request(app.getHttpServer())
-        .delete('/customers/1')
-        .expect(HttpStatus.OK);
-
-      expect(mockCustomerService.removeAsync).toHaveBeenCalledWith('1');
-    });
-
-    it('should return 404 if customer not found', async () => {
-      mockCustomerService.removeAsync.mockRejectedValue(
+      await expect(service.findOneAsync('1')).rejects.toThrow(
         new HttpException('Customer not found', HttpStatus.NOT_FOUND),
       );
+    });
+  });
 
-      const response = await request(app.getHttpServer())
-        .delete('/customers/1')
-        .expect(HttpStatus.NOT_FOUND);
+  describe('updateAsync', () => {
+    it('should update a customer', async () => {
+      mockCustomerRepository.findOne.mockResolvedValue(mockCustomer);
 
-      expect(response.body).toEqual({
-        statusCode: 404,
-        timestamp: expect.any(String),
-        path: '/customers/1',
-        message: 'Customer not found',
-      });
+      const dto: UpdateCustomerDto = { name: 'Ciclano' };
+      await service.updateAsync('1', dto);
+
+      expect(mockCustomerRepository.update).toHaveBeenCalledWith('1', dto);
+    });
+
+    it('should throw an exception if customer not found', async () => {
+      mockCustomerRepository.findOne.mockResolvedValue(null);
+
+      await expect(
+        service.updateAsync('1', { name: 'Ciclano' }),
+      ).rejects.toThrow(
+        new HttpException('Customer not found', HttpStatus.NOT_FOUND),
+      );
+    });
+  });
+
+  describe('removeAsync', () => {
+    it('should remove a customer', async () => {
+      mockCustomerRepository.findOne.mockResolvedValue(mockCustomer);
+
+      await service.removeAsync('1');
+
+      expect(mockCustomerRepository.delete).toHaveBeenCalledWith('1');
+    });
+
+    it('should throw an exception if customer not found', async () => {
+      mockCustomerRepository.findOne.mockResolvedValue(null);
+
+      await expect(service.removeAsync('1')).rejects.toThrow(
+        new HttpException('Customer not found', HttpStatus.NOT_FOUND),
+      );
+    });
+  });
+
+  describe('cleanSelectedAsync', () => {
+    it('should unselect all selected customers', async () => {
+      await service.cleanSelectedAsync();
+
+      expect(mockCustomerRepository.update).toHaveBeenCalledWith(
+        { selected: true },
+        { selected: false },
+      );
     });
   });
 });
