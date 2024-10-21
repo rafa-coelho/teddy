@@ -20,7 +20,7 @@ import { CustomerService } from './customer.service';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
 import { Customer } from './entities/customer.entity';
-import { ResponseListData } from 'src/data/response-list.data';
+import { ResponseListData } from '../../data/response-list.data';
 
 @ApiTags('customers')
 @Controller('customers')

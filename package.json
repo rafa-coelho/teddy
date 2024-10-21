@@ -1,0 +1,11 @@
+{
+  "scripts": {
+    "prepare": "husky",
+    "pre-commit-checks": "npm run test:backend",
+    "test:backend": "cd src/backend && npm run test"
+  },
+  "devDependencies": {
+    "husky": "^9.1.6",
+    "lint-staged": "^15.2.10"
+  }
+}
