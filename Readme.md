@@ -40,3 +40,11 @@ docker-compose up --build -d
 - Frontend: http://localhost:5173
 - Backend: http://localhost:3000
 - Swagger API Docs: http://localhost:3000/swagger
+
+
+## 📽️ Demonstrações
+
+Os vídeos de demostração estão aqui:
+- [Desktop](./demonstation/Desktop.mp4)
+- [Mobile](./demonstation/Responsive%20Mobile.mp4)
+- [Swagger](./demonstation/Swagger.mp4)

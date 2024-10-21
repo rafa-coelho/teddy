@@ -34,7 +34,10 @@ export class CustomerController {
     description: 'Cliente criado com sucesso.',
     type: Customer,
   })
-  @ApiBody({ type: CreateCustomerDto })
+  @ApiBody({
+    type: CreateCustomerDto,
+    description: 'Dados para criação do cliente',
+  })
   async create(@Body() createCustomerDto: CreateCustomerDto) {
     return await this.customerService.createAsync(createCustomerDto);
   }
@@ -77,8 +80,8 @@ export class CustomerController {
 
   @Put(':id')
   @ApiOperation({ summary: 'Atualiza um cliente pelo ID' })
-  @ApiParam({ name: 'id', description: 'ID do cliente' }) // Define um parâmetro de rota
-  @ApiBody({ type: UpdateCustomerDto }) // Define o corpo da requisição
+  @ApiParam({ name: 'id', description: 'ID do cliente' })
+  @ApiBody({ type: UpdateCustomerDto, description: 'Dados para atualização' })
   @ApiResponse({ status: 200, description: 'Cliente atualizado com sucesso.' })
   async update(
     @Param('id') id: string,
